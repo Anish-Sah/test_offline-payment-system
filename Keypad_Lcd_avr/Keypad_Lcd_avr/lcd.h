@@ -1,6 +1,6 @@
 #ifndef F_CPU
 
-# define F_CPU 16000000UL // clock speed is 16MHz
+# define F_CPU 8000000UL // clock speed is 16MHz
 
 #endif
 
