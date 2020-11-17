@@ -1,0 +1,171 @@
+
+Keypad_avr.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         000000d4  00000000  00000000  00000054  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .data         00000000  00800060  00800060  00000128  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .comment      00000030  00000000  00000000  00000128  2**0
+                  CONTENTS, READONLY
+  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000158  2**2
+                  CONTENTS, READONLY
+  4 .debug_aranges 00000030  00000000  00000000  00000194  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_info   000006a3  00000000  00000000  000001c4  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_abbrev 000005a9  00000000  00000000  00000867  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_line   000002b2  00000000  00000000  00000e10  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_frame  00000044  00000000  00000000  000010c4  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_str    00000365  00000000  00000000  00001108  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_loc    000000e4  00000000  00000000  0000146d  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_ranges 00000020  00000000  00000000  00001551  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	0c 94 2a 00 	jmp	0x54	; 0x54 <__ctors_end>
+   4:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+   8:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+   c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  10:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  14:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  18:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  1c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  20:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  24:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  28:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  2c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  30:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  34:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  38:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  3c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  40:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  44:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  48:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  4c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  50:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+
+00000054 <__ctors_end>:
+  54:	11 24       	eor	r1, r1
+  56:	1f be       	out	0x3f, r1	; 63
+  58:	cf e5       	ldi	r28, 0x5F	; 95
+  5a:	d8 e0       	ldi	r29, 0x08	; 8
+  5c:	de bf       	out	0x3e, r29	; 62
+  5e:	cd bf       	out	0x3d, r28	; 61
+  60:	0e 94 63 00 	call	0xc6	; 0xc6 <main>
+  64:	0c 94 68 00 	jmp	0xd0	; 0xd0 <_exit>
+
+00000068 <__bad_interrupt>:
+  68:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+
+0000006c <Init>:
+#include <avr/io.h>
+#include <util/delay.h>
+
+void Init()
+{
+	DDRC = 0xFF;		//8-bit LED for key output
+  6c:	8f ef       	ldi	r24, 0xFF	; 255
+  6e:	84 bb       	out	0x14, r24	; 20
+	PORTC=0x00;			//Initial leds are off
+  70:	15 ba       	out	0x15, r1	; 21
+	KeypadDirectionRegister = 0x0F;
+  72:	8f e0       	ldi	r24, 0x0F	; 15
+  74:	87 bb       	out	0x17, r24	; 23
+	KeypadPortControl = 0xF0;
+  76:	80 ef       	ldi	r24, 0xF0	; 240
+  78:	88 bb       	out	0x18, r24	; 24
+  7a:	08 95       	ret
+
+0000007c <GetKey>:
+}
+
+void GetKey()
+{
+	//Is Keypad pressed
+	if(KeypadPortValue == 0xF0) return;
+  7c:	86 b3       	in	r24, 0x16	; 22
+  7e:	80 3f       	cpi	r24, 0xF0	; 240
+  80:	09 f1       	breq	.+66     	; 0xc4 <GetKey+0x48>
+	#else
+		//round up by default
+		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+	#endif
+
+	__builtin_avr_delay_cycles(__ticks_dc);
+  82:	2f ef       	ldi	r18, 0xFF	; 255
+  84:	80 e7       	ldi	r24, 0x70	; 112
+  86:	92 e0       	ldi	r25, 0x02	; 2
+  88:	21 50       	subi	r18, 0x01	; 1
+  8a:	80 40       	sbci	r24, 0x00	; 0
+  8c:	90 40       	sbci	r25, 0x00	; 0
+  8e:	e1 f7       	brne	.-8      	; 0x88 <GetKey+0xc>
+  90:	00 c0       	rjmp	.+0      	; 0x92 <GetKey+0x16>
+  92:	00 00       	nop
+	_delay_ms(50);
+	
+	//Scan the Keypad
+	uint8_t keyPressCode;
+	uint8_t keyUpperNib = KeypadPortValue;			//Storing the initial upper nibble of the key pressed
+  94:	96 b3       	in	r25, 0x16	; 22
+	KeypadPortControl ^= 0xFF;						//Reversing the Port control
+  96:	88 b3       	in	r24, 0x18	; 24
+  98:	80 95       	com	r24
+  9a:	88 bb       	out	0x18, r24	; 24
+	KeypadDirectionRegister ^= 0xFF;				//Reversing the data direction
+  9c:	87 b3       	in	r24, 0x17	; 23
+  9e:	80 95       	com	r24
+  a0:	87 bb       	out	0x17, r24	; 23
+	asm volatile ("nop");							//No operation instruction (time for reversing data direction)
+  a2:	00 00       	nop
+	asm volatile ("nop");							
+  a4:	00 00       	nop
+	uint8_t keyLowerNib = KeypadPortValue;			//Storing the Lower Nibble of key pressed
+  a6:	86 b3       	in	r24, 0x16	; 22
+	keyLowerNib &= 0x0F;							//Resetting Upper Nibble changes of Port Value
+	keyPressCode = keyUpperNib + keyLowerNib;		//Combining the Upper and Lower Nibbles
+  a8:	8f 70       	andi	r24, 0x0F	; 15
+  aa:	89 0f       	add	r24, r25
+	PORTC = keyPressCode;							//Displaying the Key Pressed in the 8-bit led
+  ac:	85 bb       	out	0x15, r24	; 21
+  ae:	2f ef       	ldi	r18, 0xFF	; 255
+  b0:	87 ea       	ldi	r24, 0xA7	; 167
+  b2:	91 e6       	ldi	r25, 0x61	; 97
+  b4:	21 50       	subi	r18, 0x01	; 1
+  b6:	80 40       	sbci	r24, 0x00	; 0
+  b8:	90 40       	sbci	r25, 0x00	; 0
+  ba:	e1 f7       	brne	.-8      	; 0xb4 <GetKey+0x38>
+  bc:	00 c0       	rjmp	.+0      	; 0xbe <GetKey+0x42>
+  be:	00 00       	nop
+	_delay_ms(2000);
+	Init();										//Resetting all the led and keypad
+  c0:	0e 94 36 00 	call	0x6c	; 0x6c <Init>
+  c4:	08 95       	ret
+
+000000c6 <main>:
+
+
+int main(void)
+
+{
+	Init();
+  c6:	0e 94 36 00 	call	0x6c	; 0x6c <Init>
+	while(1)
+	{
+			GetKey();				//Getting key by polling method
+  ca:	0e 94 3e 00 	call	0x7c	; 0x7c <GetKey>
+  ce:	fd cf       	rjmp	.-6      	; 0xca <main+0x4>
+
+000000d0 <_exit>:
+  d0:	f8 94       	cli
+
+000000d2 <__stop_program>:
+  d2:	ff cf       	rjmp	.-2      	; 0xd2 <__stop_program>
